@@ -1,6 +1,6 @@
-# Smol webhook
+# Smol webhook [(crates.io)](https://crates.io/crates/smol_webhook)
 
-A small rust crate project that is based on the webserver project in the [rust book](https://doc.rust-lang.org/book/ch20-00-final-project-a-web-server.html).
+A small rust project that is based on the webserver project in the [rust book](https://doc.rust-lang.org/book/ch20-00-final-project-a-web-server.html).
 
 This script will listen to the github webhook for a push event. It will check branch and it will execute a script placed near the executable.
 
