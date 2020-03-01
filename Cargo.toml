@@ -1,8 +1,12 @@
 [package]
 name = "smol_webhook"
+description = "A small github webhook server"
+hompage = "https://github.com/zynaxsoft/smol_webhook"
+repository = "https://github.com/zynaxsoft/smol_webhook"
 version = "0.1.0"
 authors = ["Tanapol Prucksakorn <tanapol.pr@gmail.com>"]
 edition = "2018"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
