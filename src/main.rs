@@ -10,10 +10,12 @@ use std::process::Command;
 extern crate serde_json;
 extern crate crypto;
 
+use serde_json::{Value};
 use crypto::sha1::Sha1;
 use crypto::hmac::Hmac;
-use crypto::mac::Mac;
-use serde_json::{Value};
+use crypto::mac::{Mac, MacResult};
+use crypto::util::fixed_time_eq;
+use std::num::ParseIntError;
 
 fn main() {
     let config: Arc<Config> = Arc::new(Config::new().unwrap());
@@ -39,17 +41,22 @@ fn run_script(path: &str) {
     println!("output\n{}", str::from_utf8(&output.stdout).unwrap());
 }
 
+fn str_to_u8(s: &str) -> Result<Vec<u8>, ParseIntError> {
+    (5..s.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
+        .collect()
+}
+
 fn check_hash(local_key: &str, body: &str, signature: &str) -> bool {
     let mut hmac = Hmac::new(Sha1::new(), local_key.as_bytes());
     hmac.input(body.as_bytes());
-    // let local_hash = format!("sha1={:02x?}", hmac.result().code());
-    let hmac = hmac.result();
-    let mut local_hash = String::from("sha1=");
-    for hex in hmac.code().iter() {
-        local_hash.push_str(&format!("{:02x}", hex));
-    }
-    println!("{} == {}", local_hash, signature);
-    local_hash == signature
+    let my_hash = hmac.result();
+
+    let signature = str_to_u8(signature).unwrap();
+    let signature = MacResult::new(&signature);
+
+    fixed_time_eq(my_hash.code(), signature.code())
 }
 
 fn get_header<'a>(key: &str, headers: &'a str) -> Option<&'a str> {
