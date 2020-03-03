@@ -15,7 +15,6 @@ use crypto::sha1::Sha1;
 use crypto::hmac::Hmac;
 use crypto::mac::{Mac, MacResult};
 use crypto::util::fixed_time_eq;
-use std::num::ParseIntError;
 
 fn main() {
     let config: Arc<Config> = Arc::new(Config::new().unwrap());
@@ -41,11 +40,17 @@ fn run_script(path: &str) {
     println!("output\n{}", str::from_utf8(&output.stdout).unwrap());
 }
 
-fn str_to_u8(s: &str) -> Result<Vec<u8>, ParseIntError> {
-    (5..s.len())
+fn sha1_str_to_u8(s: &str) -> Result<Vec<u8>, &'static str> {
+    if s.len() != 45 {
+        return Err("Invalid x-hub-signature string")
+    }
+    match (5..45)
         .step_by(2)
         .map(|i| u8::from_str_radix(&s[i..i + 2], 16))
-        .collect()
+        .collect() {
+            Ok(u8_vec) => Ok(u8_vec),
+            Err(_) => Err("Invalid x-hub-signature string"),
+        }
 }
 
 fn check_hash(local_key: &str, body: &str, signature: &str) -> bool {
@@ -53,7 +58,10 @@ fn check_hash(local_key: &str, body: &str, signature: &str) -> bool {
     hmac.input(body.as_bytes());
     let my_hash = hmac.result();
 
-    let signature = str_to_u8(signature).unwrap();
+    let signature = match sha1_str_to_u8(signature) {
+        Ok(u8_vec) => u8_vec,
+        Err(_) => return false,
+    };
     let signature = MacResult::new(&signature);
 
     fixed_time_eq(my_hash.code(), signature.code())
