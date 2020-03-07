@@ -4,6 +4,11 @@ A small rust project that is based on the webserver project in the [rust book](h
 
 This script will listen to the github webhook for a push event. It will check branch and it will execute a script placed near the executable.
 
+# Usage
+1. [Install Rust](https://www.rust-lang.org/tools/install)
+2. `cargo install smol_webhook`
+3. Configure the server with the environment variables listsed below.
+4. Run it with `/path/to/cargo_binary/smol_webhook` e.g. `.cargo/bin/smol_webhook`
 
 ## Configuration
 
