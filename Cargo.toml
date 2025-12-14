@@ -15,5 +15,5 @@ name = "smol_webhook"
 path = "src/lib.rs"
 
 [dependencies]
-serde_json = "1.0.48"
+serde_json = "1.0.145"
 rust-crypto = "0.2.36"
